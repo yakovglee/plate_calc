@@ -1,0 +1,18 @@
+!    -*- f90 -*-
+! Note: the context of this file is case sensitive.
+
+python module kernel ! in 
+    interface  ! in :kernel
+        subroutine calc_kernel(arr,nx,ny,px,py,p) ! in :kernel:kernel.f90
+            real(kind=8) dimension(nx,ny),intent(in) :: arr
+            integer, optional,intent(in),check(shape(arr,0)==nx),depend(arr) :: nx=shape(arr,0)
+            integer, optional,intent(in),check(shape(arr,1)==ny),depend(arr) :: ny=shape(arr,1)
+            integer intent(in) :: px
+            integer intent(in) :: py
+            integer intent(in) :: p
+        end subroutine calc_kernel
+    end interface 
+end python module kernel
+
+! This file was auto-generated with f2py (version:1.20.3).
+! See http://cens.ioc.ee/projects/f2py2e/

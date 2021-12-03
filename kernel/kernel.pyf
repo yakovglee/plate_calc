@@ -3,13 +3,14 @@
 
 python module kernel ! in 
     interface  ! in :kernel
-        subroutine calc_kernel(arr,nx,ny,px,py,p) ! in :kernel:kernel.f90
-            real(kind=8) dimension(nx,ny),intent(inout) :: arr
-            integer, optional,intent(in),check(shape(arr,0)==nx),depend(arr) :: nx=shape(arr,0)
-            integer, optional,intent(in),check(shape(arr,1)==ny),depend(arr) :: ny=shape(arr,1)
+        subroutine calc_kernel(array,nx,ny,px,py,p,arr) ! in :kernel:kernel.f90
+            real(kind=8) dimension(nx,ny),intent(in) :: array
+            integer, optional,intent(in),check(shape(array,0)==nx),depend(array) :: nx=shape(array,0)
+            integer, optional,intent(in),check(shape(array,1)==ny),depend(array) :: ny=shape(array,1)
             integer intent(in) :: px
             integer intent(in) :: py
             integer intent(in) :: p
+            real(kind=8) dimension(nx,ny),intent(out),depend(nx,ny) :: arr
         end subroutine calc_kernel
     end interface 
 end python module kernel

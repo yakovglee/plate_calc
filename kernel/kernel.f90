@@ -1,6 +1,6 @@
 subroutine calc_kernel(arr, NX, NY, px, py, P)
 
-real(8), dimension(0:NX-1, 0:NY-1), intent(in) :: arr
+real(8), dimension(0:NX-1, 0:NY-1), intent(inout) :: arr
 integer, intent(in) :: NX
 integer, intent(in) :: NY
 integer, intent(in) :: px
@@ -10,7 +10,6 @@ integer, intent(in) :: P
 integer :: i, j, k, point
 real(8) :: a
 
-arr = array
 
 ! Внутренние точки
 do i = 1, NX-1-1

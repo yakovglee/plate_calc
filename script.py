@@ -158,15 +158,18 @@ def calculate_cp(psi, h, px, py, P):
     return CP
 
 
-def save_data(psi, xx, yy, cp_theory, cp_chisl):
+def save_data(psi, xx, yy, cp_theory, cp_chisl,
+              fname_psi='psi',
+              fname_cp_th='cp_th',
+              fname_cp_ch='cp_ch'):
 
     data_psi = pd.DataFrame(psi[::-1],
                             columns=xx[0, :],
                             index=yy[:, 0][::-1])
 
-    np.savetxt("cp_th.csv", cp_theory, delimiter=";")
-    np.savetxt("cp_ch.csv", cp_chisl, delimiter=";")
-    data_psi.to_csv('psi.csv', sep=';')
+    np.savetxt(fname_cp_th + ".csv", cp_theory, delimiter=";")
+    np.savetxt(fname_cp_ch + ".csv", cp_chisl, delimiter=";")
+    data_psi.to_csv(fname_psi + '.csv', sep=';')
 
 
 def main():
@@ -185,7 +188,11 @@ def main():
 
     cp_chisl = calculate_cp(psi_now, hx, px, py, P)
 
-    save_data(psi_now, xx, yy, cp_theory, cp_chisl)
+    save_data(psi_now, xx, yy, cp_theory, cp_chisl,
+              fname_psi='psi_{}'.format(eps),
+              fname_cp_th='cp_th_{}'.format(eps),
+              fname_cp_ch='cp_ch_{}'.format(eps)
+              )
 
 
 if __name__ == '__main__':

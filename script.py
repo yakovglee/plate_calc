@@ -31,20 +31,21 @@ def prepare_field(X, Y, NX, NY):
     Возвращает:
         xx, yy - координаты расчетной области
         hx, hy - шаг сетки
+        px, py, P - параметры пластины
     """
 
     px, py = NX // 2, NY // 3
     P = NY - 2 * py
 
-    x = np.linspace(0, X, NX)
-    y = np.linspace(0, Y, NY)
+    x = np.linspace(0.0, X, NX)
+    y = np.linspace(0.0, Y, NY)
 
     xx, yy = np.meshgrid(x, y)
 
     hx = xx[0, 1] - xx[0, 0]
     hy = yy[1, 0] - yy[0, 0]
 
-    return xx, yy, hx, hy
+    return xx, yy, hx, hy, px, py, P
 
 
 def psi(x, y, alpha=0.0):
@@ -159,28 +160,26 @@ def calculate_cp(psi, h, px, py, P):
 
 def save_data(psi, xx, yy, cp_theory, cp_chisl):
 
-    data_psi = pd.DataFrame(psi_now[::-1],
+    data_psi = pd.DataFrame(psi[::-1],
                             columns=xx[0, :],
                             index=yy[:, 0][::-1])
-    CP = pd.DataFrame({
-        'CP_Theory': cp_theory,
-        'CP_Chisl': cp_chisl
-    })
 
-    CP.to_csv('cp.csv', index=False, sep=';')
+    np.savetxt("cp_th.csv", cp_theory, delimiter=";")
+    np.savetxt("cp_ch.csv", cp_chisl, delimiter=";")
     data_psi.to_csv('psi.csv', sep=';')
 
 
 def main():
     NX, NY, X, Y, alpha, eps = prepare_data('data.csv')
-    xx, yy, hx, hy = prepare_field(X, Y, NX, NY)
+    NX, NY = int(NX), int(NY)
+    xx, yy, hx, hy, px, py, P = prepare_field(X, Y, NX, NY)
 
     z = np.zeros(xx.shape, dtype='f8', order='F')
     z = calculate_init_cond(z, xx, yy, alpha)
 
     psi_prev = copy.deepcopy(z)
 
-    psi_now, iter_now = calculate_psi(psi_prev, NX, NY, px, py, P, ITER=ITER, eps=eps)
+    psi_now, iter_now = calculate_psi(psi_prev, NX, NY, px, py, P, eps=eps)
 
     cp_theory = calculate_cp_theory(theta=alpha)
 

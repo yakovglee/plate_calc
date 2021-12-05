@@ -20,16 +20,17 @@ def main():
 
     cp_chisl = calculate_cp(psi_now, hx, px, py, P)
 
+    FOLDER = f'results'
     save_data(psi_now, xx, yy, cp_theory, cp_chisl,
-              fname_psi='psi_{}'.format(eps),
-              fname_cp_th='cp_th_{}'.format(eps),
-              fname_cp_ch='cp_ch_{}'.format(eps)
+              fname_psi=FOLDER + '/psi_{}'.format(eps),
+              fname_cp_th=FOLDER + '/cp_th_{}'.format(eps),
+              fname_cp_ch=FOLDER + '/cp_ch_{}'.format(eps)
               )
 
     print('Data saved')
 
-    draw_and_save_cp(cp_theory, cp_chisl, eps, 'img/cp_{}.jpg'.format(eps))
-    draw_and_save_psi(psi_now, px, py, P, 'img/psi_{}.jpg'.format(eps))
+    draw_and_save_cp(cp_theory, cp_chisl, eps, f'img/cp_{eps}.jpg')
+    draw_and_save_psi(psi_now, px, py, P, f'img/psi_{eps}.jpg')
 
     print('Data draw and saved')
 

@@ -1,10 +1,13 @@
 from kernel import calc_kernel
+
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+
+import time
 import copy
 import sympy as sp
 from sympy import re, im, I, E, symbols
-import matplotlib.pyplot as plt
 
 
 def prepare_data(PATH, sep=';'):
@@ -92,6 +95,8 @@ def calculate_psi(psi_prev, NX, NY, px, py, P, ITER=100000, eps=0.001):
 
     iter_now = 0
 
+    start = time.time()
+
     for iter in range(1, ITER):
         psi_now = calc_kernel(psi_prev, px=px, py=py, p=P, nx=NX, ny=NY)
         delta = np.max(np.abs(psi_now - psi_prev))
@@ -102,7 +107,9 @@ def calculate_psi(psi_prev, NX, NY, px, py, P, ITER=100000, eps=0.001):
             iter_now = iter
             break
 
-    return psi_now, iter_now
+    end = time.time()
+
+    return psi_now, iter_now, end-start
 
 
 def calculate_cp_theory(theta):
@@ -149,7 +156,7 @@ def calculate_cp(psi, h, px, py, P):
         CP - распределение давления, посчитанное в P точках
     """
     CP = []
-    k = py
+    k = py + 1
     for i in range(P):
         vel = (psi[k, px - 1] - psi[k, px + 1]) / 2 / h
         k += 1
@@ -173,7 +180,7 @@ def save_data(psi, xx, yy, cp_theory, cp_chisl,
     data_psi.to_csv(fname_psi + '.csv', sep=';')
 
 
-def draw_and_save_cp(cp_th, cp_ch, fname):
+def draw_and_save_cp(cp_th, cp_ch, eps, fname):
     ymin = -12
     x_ch = np.linspace(0, 1, len(cp_ch))
     x_th = np.linspace(0, 1, len(cp_th))
@@ -181,7 +188,7 @@ def draw_and_save_cp(cp_th, cp_ch, fname):
 
     plt.figure(figsize=(10, 10))
     plt.plot(x_th, cp_th, label='Теория', color='b')
-    plt.plot(x_ch, cp_ch, label=r'МКР $\epsilon=0.001$', color='r', ls='-.')
+    plt.plot(x_ch, cp_ch, label=r'МКР $\epsilon={}$'.format(eps), color='r', ls='-.')
     plt.axvline(0.5 * np.cos(np.deg2rad(15)), ymax=0.915, ls='--', alpha=0.5)
 
     plt.annotate("Кр. точка 0.48", xy=(0.5 * np.cos(np.deg2rad(15)), -14), xytext=(0.55, -13),
@@ -201,7 +208,7 @@ def draw_and_save_cp(cp_th, cp_ch, fname):
 
 def draw_and_save_psi(psi, px, py, P, fname):
     fig, ax = plt.subplots(figsize=(10, 10))
-    contourf_ = ax.contour(psi, [i * 0.2 for i in range(-50, 50)], colors='k', alpha=0.5, linestyles='solid')
+    contourf_ = ax.contour(psi, [i * 0.15 for i in range(-50, 50)], colors='k', alpha=0.5, linestyles='solid')
     ax.plot([px, px], [py, py + P], lw=2.5)
 
     ax.set_xlabel('X')

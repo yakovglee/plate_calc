@@ -4,6 +4,7 @@ import pandas as pd
 import copy
 import sympy as sp
 from sympy import re, im, I, E, symbols
+import matplotlib.pyplot as plt
 
 
 def prepare_data(PATH, sep=';'):
@@ -148,10 +149,10 @@ def calculate_cp(psi, h, px, py, P):
         CP - распределение давления, посчитанное в P точках
     """
     CP = []
-    k = py + 1
-    for i in range(P - 1):
-        k += 1
+    k = py
+    for i in range(P):
         vel = (psi[k, px - 1] - psi[k, px + 1]) / 2 / h
+        k += 1
 
         CP.append(1.0 - vel * vel)
 
@@ -171,3 +172,39 @@ def save_data(psi, xx, yy, cp_theory, cp_chisl,
     np.savetxt(fname_cp_ch + ".csv", cp_chisl, delimiter=";")
     data_psi.to_csv(fname_psi + '.csv', sep=';')
 
+
+def draw_and_save_cp(cp_th, cp_ch, fname):
+    ymin = -12
+    x_ch = np.linspace(0, 1, len(cp_ch))
+    x_th = np.linspace(0, 1, len(cp_th))
+    x_t = np.arange(0, 1.1, 0.1)
+
+    plt.figure(figsize=(10, 10))
+    plt.plot(x_th, cp_th, label='Теория', color='b')
+    plt.plot(x_ch, cp_ch, label=r'МКР $\epsilon=0.001$', color='r', ls='-.')
+    plt.axvline(0.5 * np.cos(np.deg2rad(15)), ymax=0.915, ls='--', alpha=0.5)
+
+    plt.annotate("Кр. точка 0.48", xy=(0.5 * np.cos(np.deg2rad(15)), -14), xytext=(0.55, -13),
+                 arrowprops=dict(arrowstyle="->"), fontsize=13)
+
+    plt.yticks(np.arange(ymin, 2, 1))
+    plt.xticks(x_t)
+
+    plt.ylim(-12)
+    plt.title(r'$C_p$ при $\alpha$ = 15$^\circ$', fontsize=14)
+    plt.xlabel(r'Y', fontsize=14)
+    plt.ylabel(r'$C_p$', fontsize=14)
+    plt.legend(loc='best', fontsize=14)
+    plt.grid();
+    plt.savefig(fname, dpi=200, bbox_inches='tight')
+
+
+def draw_and_save_psi(psi, px, py, P, fname):
+    fig, ax = plt.subplots(figsize=(10, 10))
+    contourf_ = ax.contour(psi, [i * 0.2 for i in range(-50, 50)], colors='k', alpha=0.5, linestyles='solid')
+    ax.plot([px, px], [py, py + P], lw=2.5)
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_title(r'Линии тока при $\alpha$ = {}$^\circ$'.format(15))
+    fig.savefig(fname, dpi=200, bbox_inches='tight')

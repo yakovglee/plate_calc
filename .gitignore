@@ -3,3 +3,6 @@ __pycache__
 .ipynb_checkpoints/
 .DS_Store
 *.csv
+results/
+img/cp.jpg img/cp_1e-05.jpg img/cp_1e-06.jpg
+img/psi.jpg img/psi_1e-05.jpg img/psi_1e-06.jpg
